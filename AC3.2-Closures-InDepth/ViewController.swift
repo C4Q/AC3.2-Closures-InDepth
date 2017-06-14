@@ -17,7 +17,8 @@ class ViewController: UIViewController {
   }
   
   override func viewDidAppear(_ animated: Bool) {
-    let done = self.longRunningTask()
+//    print(self.longRunningTask())
+    print("Done, ", self.longAdditionTask())
     self.view.backgroundColor = .red
   }
 
@@ -30,6 +31,17 @@ class ViewController: UIViewController {
     }
     
     return "ALL DONE!"
+  }
+  
+  func longAdditionTask() -> Int {
+    print("Starting Addition")
+    var result = 0
+    
+    DispatchQueue.global().async {
+      result = Array(0...10000000).reduce(0, +)
+    }
+    
+    return result
   }
 }
 

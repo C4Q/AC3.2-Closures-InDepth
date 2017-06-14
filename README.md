@@ -196,7 +196,7 @@ You should see all of the numbers from `0...250,000` print out in the console, f
 Network requests happen *asynchronously*, meaning that they can happen out of order and finish independent of any other request. Update your code in `longRunningTask` to this: 
 
 ```swift
-  func longRunningTask() -> String {
+  func longRunningTask() {
     
     DispatchQueue.global().async {
       for i in 0...250000{
@@ -208,11 +208,112 @@ Network requests happen *asynchronously*, meaning that they can happen out of or
 ```
 Notice the difference!? 
 
+
+#### A metaphor 
+
 Now instead of waiting for the loop to complete, the background of the view updates immediately. We've made our task *asynchronous*; it now gets started and finishes sometime later, but it doesn't hold everything else up. Asynchronous tasks get separated out into different *queues* in order to run code *concurrently*. Imagine this:
 
 You're at a grocery store, and you only need to buy granola. Just a single, lonesome bag of granola. So you walk in, grab the bag and stroll to the checkout. Bad news: there is only one register open and there are a huge line of customers ahead of you in the *queue* to checkout. For the most part, the customers ahead of you have only a handful of items each, so getting through everyone should be fairly quick, eventhough there are a lot of them. 
 
 You take a look all the way down to the start of the *queue* and you notice the hold up: a single customer with 3 carts-full of groceries. If only there were other *queue* open so that you didn't have to depend (*synchronizity*) on all of the customers (*task*) ahead of you! 
+
+But what luck, sooner several more cashiers come over and open up their tills. The customers then spread out to the other tills making much shorter *queues*. The customer with the 3 carts is still being rung up as you sail by on your way home, but it doesn't really matter because you (and the other customers/tasks) got what you needed in a timely fashion. And remaining customer will still eventually be taken care of. 
+
+####DispatchQueue
+
+A `DispatchQueue` is essentially like an addition checkout register: you can push tasks on one to be run independantly of tasks running in other queues. Calling `.global()` instantiates one of these cash registers (which is kind of like getting the cashier to actually open and work on the queue). We specify that we want the queue to be `async`hronous so that this task doesn't hold up anything else. 
+
+The result is that we can put a long running task on its own queue, and get back to making sure our app is working on other stuff. 
+
+####Lifetime of Queues and Closures
+
+Let's make another change to `longRunningTask` by having it return something:
+
+```swift
+  func longRunningTask() {
+    
+    DispatchQueue.global().async {
+      for i in 0...250000{
+        print("Count: \(i)")
+      }
+    }
+
+    return "ALL DONE"
+  }
+```
+Also, change `viewDidAppear` to have this: `print(self.longRunningTask())`. Now rerun the project. 
+
+> Image 
+
+Wait, how did the function finish and `return "All Done"` before the loop finished? Well, our long-running loop has been **pushed off** into another queue and so code execution returns to normal. The lifetime of the function ends, but the lifetime of that loop continues on another queue until its done. This is why we get our return value well before we finish our task. 
+
+This doesn't really seem consequential until you come into a situation when you need the result of a long-running task from a function! For example, let's add in `longAdditionTask`:
+
+```swift
+  override func viewDidAppear(_ animated: Bool) {
+	//    print(self.longRunningTask())
+    	self.longAdditionTask()
+    	self.view.backgroundColor = .red
+  }
+  
+  func longAdditionTask() {
+    print("Starting Addition")
+    let result = Array(0...10000000).reduce(0, +) // this creates an array of all Int values from 0 to 10,000,000 and adds them all up
+    print("Finished Addition")
+  }
+```
+
+Ok, now change it so that we use the result of our addition task:
+
+```swift
+  override func viewDidAppear(_ animated: Bool) {
+//    print(self.longRunningTask())
+    print("Done, ", self.longAdditionTask())
+    self.view.backgroundColor = .red
+  }
+
+  func longAdditionTask() -> Int {
+    print("Starting Addition")
+    let result = Array(0...10000000).reduce(0, +) 
+    return result
+  }
+```
+
+> Note: We add in `print` statements to get some visual indication that a task is started/running/completed
+
+We're back to the original problem (having to wait for the return value) though, so lets wrap things up in another `DispatchQueue` call: 
+
+```swift
+func longAdditionTask() -> Int {
+	print("Starting Addition")
+    var result = 0
+    
+    DispatchQueue.global().async {
+      result = Array(0...10000000).reduce(0, +)
+    }
+    
+    return result
+  }
+
+```
+
+Great! Now re-run the project: 
+
+> Image 
+
+What happened? It printed out "Done, 0" and the view changed to red almost immediately! That is quite expected. Here is why:
+
+1. We make a call to `longAdditionTask`
+2. Code executions line by line in the function, print out to console and instantiating `result = 0`
+3. `DispatchQueue` pushes off the task that's taking the most time off to another queue
+4. Code in `longAdditionTask` continues to execute line by line, since it's slowest code has been pushed elsewhere
+5. The *current* value of `result`, which is 0, gets returned and the function finishes.
+6. Later on, the long running task on the `DispatchQueue` finishes and assigns its value to result... which no longer is of any use since `result` only lives in the lifetime  of the `longAdditionTask` function and that function has finished a long time ago. 
+
+Then the question remains: Where performing asynchronous tasks, how can we wait on long-running tasks in order to get the correct return values? 
+
+CLOSURES! But not just any type of closures, `@escaping` closures. 
+
 
 ###4. Escaping Closures
 
