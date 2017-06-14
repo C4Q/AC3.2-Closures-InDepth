@@ -84,7 +84,7 @@ printGreetMessage(name: "Louis", msg: greetClosure) // prints "Hello, Louis!"
 
 Now, if we had other closures for other messages, we could re-use this function to print them out:
 
-```
+```swift
 let newMailMessage = { (name: String) -> String in
   return "\(name), You have unread messages."
 }
@@ -266,8 +266,8 @@ This doesn't really seem consequential until you come into a situation when you 
 ```swift
   override func viewDidAppear(_ animated: Bool) {
 	//    print(self.longRunningTask())
-    	self.longAdditionTask()
-    	self.view.backgroundColor = .red
+    self.longAdditionTask()
+    self.view.backgroundColor = .red
   }
   
   func longAdditionTask() {
@@ -317,7 +317,9 @@ Great! Now re-run the project:
 
 ![Not quite the result we'd expect...](./Images/result_returns_wrong.png)
 
-What happened? It printed out "Done, 0" and the view changed to red almost immediately! But actually, that result is quite expected. Here's why:
+Wait, what? The view changed to red almost immediately but it printed out 0 as the result
+
+Here's why:
 
 1. We make a call to `longAdditionTask`
 2. Code executions line by line in the function, print out to console and instantiating `result = 0`
@@ -362,7 +364,7 @@ So in our example, let's see how this would affect our code:
 To call this new function, we'll use trailing syntax back in `viewDidAppear`:
 
 ```swift
-	self.longAdditionTask { (result: Int) in
+    self.longAdditionTask { (result: Int) in
       print("Done, ", result)
     }
 ```
