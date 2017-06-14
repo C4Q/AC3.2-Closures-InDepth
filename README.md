@@ -27,9 +27,9 @@
 
 ---
 
-###1. Reviewing what we know
+### 1. Reviewing what we know
 
-####Comparing Closures to Functions
+#### Comparing Closures to Functions
 
 Closures are simply blocks of code that we want to run at some point. In this regard, they are no different than functions. For example, say we wanted to create a function that is used to print out a greeting for a user. We may want to pass in the user's name as a `String` and expect to get back a formatted `String`. For that we could write something like: 
 
@@ -42,7 +42,7 @@ func greet(name: String )-> String {
 greet(name: "Louis") // returns "Hello, Louis!"
 ```
 
-####Closures as variables
+#### Closures as variables
 
 It's possible to execute the exact same code, in pretty much the same manner by writing it using a closure:
 
@@ -70,7 +70,7 @@ It's worth repeatng, functions and closures are very similar!
 
 ![Closures First Class All The Way](./Images/closures_asFunc.png)
 
-####Closures as function parameters
+#### Closures as function parameters
 
 Another feature of first-class citizenship is being able to be passed to a function as a parameter. Closures can be passed to functions as parameters so long as they match the type the parameter is expecting. Let's say we have a couple of these `greet`-based functions and wanted a simple way to print them out. We could write a function that accepted the same type as the function (`(String) -> String`) and passed that along to a `print` statement:
 
@@ -91,7 +91,7 @@ let newMailMessage = { (name: String) -> String in
 printGreetMessage(name: "Louis", msg: newMailMessage) // prints "Louis, You have unread messages"
 ```
 
-####Closures as function return values
+#### Closures as function return values
 
 Closures can also be returned as values themselves:
 
@@ -108,7 +108,7 @@ logout("Louis") // prints "You have been logged out, Louis"
 
 In this example `logout` is a variable that contains a closure of type `(String)->String`. To actually run the code in the closure, we pass it the one `String` parameter it is expecting. This in turn gets treated as the `name: String` parameter in the closure and finally the formatted `String` gets returned. 
 
-####Trailing Closures
+#### Trailing Closures
 
 There is a special syntax for functions where their last parameter is a closure, which is called *trailing closure syntax*. Looking back at the `printGreetMessage` function, we could rewrite a call to the function like so:
 
@@ -122,7 +122,7 @@ This allows you to define your closure code inline, rather than passing it in as
 
 ---
 
-###2. Lifetime of a closure
+### 2. Lifetime of a closure
 
 You've probably already heard and experienced that a closure "captures" the environment in which it is defined; meaning that in the scope of the closure, variable state can be stored/updated long after the execution of a function would have terminated.
 
@@ -171,7 +171,7 @@ print(pendingMessage())
 It'll take a little while to grasp this concept, but you'll see that extending the lifetime of a closure is very advantageous for network calls, which take much longer to finish than executing the code that starts them. The closure stays "alive" long enough for the network requests to complete, ensuring that we don't have a situation where we call a function expecting some network `Data` and the function finishes running before the network finishes returning the needed `Data`.
 
 ---
-###3. Asynchronous Request
+### 3. Asynchronous Request
 
 > Note: These examples are more easily done in an Xcode Project, rather than playgrounds. For the rest of this lesson, work in `ViewController.swift` of the project repo
 
@@ -233,13 +233,13 @@ You take a look all the way down to the start of the *queue* and you notice the 
 
 But what luck, soon several more cashiers come over and open up their tills. The customers then spread out to the other tills making much shorter *queues*. The customer with the 3 carts is still being rung up as you sail by on your way home, but it doesn't really matter because you (and the other customers/tasks) got what you needed in a timely fashion. And remaining customer will still eventually be taken care of. 
 
-####DispatchQueue
+#### DispatchQueue
 
 A `DispatchQueue` is essentially like an addition checkout register: you can push tasks on one to be run independantly of tasks running in other queues. Calling `.global()` instantiates one of these cash registers (which is kind of like getting the cashier to actually open and work on the queue). We specify that we want the queue to be `async`hronous so that this task doesn't hold up anything else. 
 
 The result is that we can put a long running task on its own queue, and get back to making sure our app is working on other stuff. 
 
-####Lifetime of Queues and Closures
+#### Lifetime of Queues and Closures
 
 Let's make another change to `longRunningTask` by having it return something:
 
@@ -331,7 +331,7 @@ Then the question remains: Where performing lengthy tasks, how can we wait in or
 CLOSURES! But not just any type of closures, `@escaping` closures. 
 
 
-###4. Escaping Closures
+### 4. Escaping Closures
 
 Escaping closures are a special beast: they extend the lifetime of a closure to ensure we have enough time to get the result of a long running task. They are found in functions defined with least one closure parameter and are marked  `@escaping`. 
 
@@ -371,7 +371,7 @@ Ok, run the project one last time and observe the difference!
 
 ![OH MY GLOB!](./Images/async_escape.png)
 
-####Excellent work! We've accomplished a lot:
+#### Excellent work! We've accomplished a lot:
 
 1. We no longer hold up the rest of our code because of our long task
 2. And we can access the proper value as soon as its ready
@@ -381,6 +381,6 @@ If this still doesn't seem 💯 yet, dont worry. You're going to get used to the
 😎
 
 ---
-###4. Exercises
+### 4. Exercises
 
 > TODO
