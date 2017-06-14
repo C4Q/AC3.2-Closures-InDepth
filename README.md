@@ -9,11 +9,21 @@
 
 ### Readings
 
+> TODO
+
 #### Further Readings:
+
+> TODO
 
 #### Vocabulary
 
+> TODO 
+
 - `@escaping` closure
+- Callback
+- Concurrent
+- Queue
+- Asynchronous
 
 ---
 
@@ -58,7 +68,7 @@ greetFunc("Louis") // returns "Hello, Louis!"
 
 It's worth repeatng, functions and closures are very similar!
 
->> Image
+![Closures First Class All The Way](./Images/closures_asFunc.png)
 
 ####Closures as function parameters
 
@@ -191,7 +201,11 @@ class ViewController: UIViewController {
 
 ```
 
-You should see all of the numbers from `0...250,000` print out in the console, followed by the `view.background` changing to `.red`. Its not uncommon that a network request (especially with bad cell service) takes this long to retrieve the contents from a webpage and then to display them on screen. Though, network requests don't generally hold up UI changes, meaning that making a request that takes a long time to finish shouldn't interfere with how we interact with the app. For example, text will load much quicker on a webpage than images. But you've definitely been in a situation where you can scroll through the page as the images start to get loaded. Imagine if you couldn't do *anything* until *every single thing* on that page was downloaded, ads and all! Not a great experience. 
+You should see all of the numbers from `0...250,000` print out in the console, followed by the `view.background` changing to `.red`. 
+
+![Wait until finished to see red](./Images/full_count_til_red.png)
+
+Its not uncommon that a network request (especially with bad cell service) takes this long to retrieve the contents from a webpage and then to display them on screen. Though, network requests don't generally hold up UI changes, meaning that making a request that takes a long time to finish shouldn't interfere with how we interact with the app. For example, text will load much quicker on a webpage than images. But you've definitely been in a situation where you can scroll through the page as the images start to get loaded. Imagine if you couldn't do *anything* until *every single thing* on that page was downloaded, ads and all! Not a great experience. 
 
 Network requests happen *asynchronously*, meaning that they can happen out of order and finish independent of any other request. Update your code in `longRunningTask` to this: 
 
@@ -206,8 +220,8 @@ Network requests happen *asynchronously*, meaning that they can happen out of or
 
   }
 ```
-Notice the difference!? 
 
+Notice the difference!? 
 
 #### A metaphor 
 
@@ -215,9 +229,9 @@ Now instead of waiting for the loop to complete, the background of the view upda
 
 You're at a grocery store, and you only need to buy granola. Just a single, lonesome bag of granola. So you walk in, grab the bag and stroll to the checkout. Bad news: there is only one register open and there are a huge line of customers ahead of you in the *queue* to checkout. For the most part, the customers ahead of you have only a handful of items each, so getting through everyone should be fairly quick, eventhough there are a lot of them. 
 
-You take a look all the way down to the start of the *queue* and you notice the hold up: a single customer with 3 carts-full of groceries. If only there were other *queue* open so that you didn't have to depend (*synchronizity*) on all of the customers (*task*) ahead of you! 
+You take a look all the way down to the start of the *queue* and you notice the hold up: a single customer with 3 carts-full of groceries. If only there were other *queue* open so that you didn't have to depend (*synchronicity*) on all of the customers (*task*) ahead of you! 
 
-But what luck, sooner several more cashiers come over and open up their tills. The customers then spread out to the other tills making much shorter *queues*. The customer with the 3 carts is still being rung up as you sail by on your way home, but it doesn't really matter because you (and the other customers/tasks) got what you needed in a timely fashion. And remaining customer will still eventually be taken care of. 
+But what luck, soon several more cashiers come over and open up their tills. The customers then spread out to the other tills making much shorter *queues*. The customer with the 3 carts is still being rung up as you sail by on your way home, but it doesn't really matter because you (and the other customers/tasks) got what you needed in a timely fashion. And remaining customer will still eventually be taken care of. 
 
 ####DispatchQueue
 
@@ -243,11 +257,11 @@ Let's make another change to `longRunningTask` by having it return something:
 ```
 Also, change `viewDidAppear` to have this: `print(self.longRunningTask())`. Now rerun the project. 
 
-> Image 
+![False alarm, not actually done!](./Images/result_returned_early.png)
 
 Wait, how did the function finish and `return "All Done"` before the loop finished? Well, our long-running loop has been **pushed off** into another queue and so code execution returns to normal. The lifetime of the function ends, but the lifetime of that loop continues on another queue until its done. This is why we get our return value well before we finish our task. 
 
-This doesn't really seem consequential until you come into a situation when you need the result of a long-running task from a function! For example, let's add in `longAdditionTask`:
+This doesn't really seem consequential until you come into a situation when you need the result of a long-running task from a function! For example, let's add in a new function named `longAdditionTask`:
 
 ```swift
   override func viewDidAppear(_ animated: Bool) {
@@ -263,7 +277,9 @@ This doesn't really seem consequential until you come into a situation when you 
   }
 ```
 
-Ok, now change it so that we use the result of our addition task:
+Run the project now and notice we get the same result as before using `DispatchQueue`: The task starts, gets held up, and eventually finishes. 
+
+Now change it so that we use the result of our addition task:
 
 ```swift
   override func viewDidAppear(_ animated: Bool) {
@@ -281,7 +297,7 @@ Ok, now change it so that we use the result of our addition task:
 
 > Note: We add in `print` statements to get some visual indication that a task is started/running/completed
 
-We're back to the original problem (having to wait for the return value) though, so lets wrap things up in another `DispatchQueue` call: 
+We still haven't solved the waiting issue (having to wait for the return value) though, so lets wrap things up in another `DispatchQueue` call: 
 
 ```swift
 func longAdditionTask() -> Int {
@@ -299,9 +315,9 @@ func longAdditionTask() -> Int {
 
 Great! Now re-run the project: 
 
-> Image 
+![Not quite the result we'd expect...](./Images/result_returns_wrong.png)
 
-What happened? It printed out "Done, 0" and the view changed to red almost immediately! That is quite expected. Here is why:
+What happened? It printed out "Done, 0" and the view changed to red almost immediately! But actually, that result is quite expected. Here's why:
 
 1. We make a call to `longAdditionTask`
 2. Code executions line by line in the function, print out to console and instantiating `result = 0`
@@ -310,31 +326,21 @@ What happened? It printed out "Done, 0" and the view changed to red almost immed
 5. The *current* value of `result`, which is 0, gets returned and the function finishes.
 6. Later on, the long running task on the `DispatchQueue` finishes and assigns its value to result... which no longer is of any use since `result` only lives in the lifetime  of the `longAdditionTask` function and that function has finished a long time ago. 
 
-Then the question remains: Where performing asynchronous tasks, how can we wait on long-running tasks in order to get the correct return values? 
+Then the question remains: Where performing lengthy tasks, how can we wait in order to get the correct return values? 
 
 CLOSURES! But not just any type of closures, `@escaping` closures. 
 
 
 ###4. Escaping Closures
 
-Escaping closures are a special beast: they extend the lifetime of a closure to ensure we have enough time to get the result of a long running task. They are closures defined at least one closure parameter and are marked with the `@escaping` identifier in their  parameter declarations. 
-
-```swift 
-func nameOfFunction(callback: @escaping (param1: Any, param2: Any , ...)->(Void))
-```
-When called, we use trailing closure syntax to work with the expected return values.
-```swift
-self.nameOfFunction { (param1, param2, ...) in 
-	// code goes here
-}
-```
+Escaping closures are a special beast: they extend the lifetime of a closure to ensure we have enough time to get the result of a long running task. They are found in functions defined with least one closure parameter and are marked  `@escaping`. 
 
 > `escaping` closures are often referred to as "callbacks"
 
 So in our example, let's see how this would affect our code:
 
 ```swift
-// 1.
+  // 1.
   func longAdditionTask(callback: @escaping (Int)->Void) {
     print("Starting Addition")
     var result = 0
@@ -348,10 +354,10 @@ So in our example, let's see how this would affect our code:
   }
 ```
 
-1. We need to change the declaration of `longAdditionTask` to accept a single parameter of (Int)->Void. We also need to declare the closure as being `@escaping` because the contents and scope of the closure "escape" the lifetime of the function -- meaning it will continue to live and have other code access its stored values long after the function itself finishes execution. 
-2. To pass our needed `result: Int`, we give it to the closures `callback` as its one parameter.
+1. We need to change the declaration of `longAdditionTask` to accept a single parameter of (Int)->Void. We also need to declare the closure as being `@escaping` because the contents and scope of the closure *"escape"* the lifetime of the function -- meaning it will continue to live and have other code access its stored values long after the function itself finishes execution. 
+2. To pass our needed `result: Int`, we give it to the `callback` parameter.
 
-> *Remember, `callback` is of type `(Int)-Void` meaning it accepts a single `Int` parameter and returns nothing. So working with this closure is done exactly the same way as described earlier in "Closures as Variables" and "Closures as Parameters".*
+> *Remember, `callback` is of type `(Int)->Void` meaning it accepts a single `Int` parameter and returns nothing. So working with this closure is done exactly the same way as described earlier in "Closures as Variables" and "Closures as Parameters".*
 
 To call this new function, we'll use trailing syntax back in `viewDidAppear`:
 
@@ -361,10 +367,9 @@ To call this new function, we'll use trailing syntax back in `viewDidAppear`:
     }
 ```
 
-> Image
-
 Ok, run the project one last time and observe the difference! 
 
+![OH MY GLOB!](./Images/async_escape.png)
 
 ####Excellent work! We've accomplished a lot:
 
@@ -377,3 +382,5 @@ If this still doesn't seem 💯 yet, dont worry. You're going to get used to the
 
 ---
 ###4. Exercises
+
+> TODO
