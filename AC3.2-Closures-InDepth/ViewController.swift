@@ -13,13 +13,23 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view, typically from a nib.
+    
+  }
+  
+  override func viewDidAppear(_ animated: Bool) {
+    let done = self.longRunningTask()
+    self.view.backgroundColor = .red
   }
 
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+  func longRunningTask() -> String {
+    
+    DispatchQueue.global().async {
+      for i in 0...250000{
+        print("Count: \(i)")
+      }
+    }
+    
+    return "ALL DONE!"
   }
-
-
 }
 

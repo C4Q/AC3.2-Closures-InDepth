@@ -116,11 +116,106 @@ This allows you to define your closure code inline, rather than passing it in as
 
 You've probably already heard and experienced that a closure "captures" the environment in which it is defined; meaning that in the scope of the closure, variable state can be stored/updated long after the execution of a function would have terminated.
 
+For example, the code contained in this function is executed immediately and terminates when the `return` is called. All variables within the scope of that function, `messagePrefix` and `helloMessage`, no longer exist in memory after that `return` statement. That is to say, those variables are created at the time the function is called, and not being needed anyone, they are removed. 
 
+```Swift
+func sayHelloNow(name: String) -> String {
+  let messagePrefix = "Hey, its been awhile"
+  let helloMessage = messagePrefix + " \(name)"
+  
+  return helloMessage
+}
+print(sayHelloNow(name: "Louis")) // prints "Hey, its been awhile Louis"
+```
+
+This is in contrast to a closure, which "keeps alive" defined objects in its scope:
+
+```swift
+func sayHelloEventually(name: String) -> ()->String {
+  // 1. 
+  let messagePrefix = "Hey, its been awhile"
+  
+  // 2.
+  let sayHello = {
+    return messagePrefix + " \(name)"
+  }
+  
+  // 3.
+  print("Returning Hello")
+
+  // 4.
+  return sayHello
+}
+
+// 5.
+let pendingMessage = sayHelloEventually(name: "Louis")
+print(pendingMessage())
+```
+
+1. We define a local constant, `messagePrefix` to hold some text to use later.
+2. A closure, `sayHello` is defined and "captures" both the local constant `messagePrefix` and passed parameter `name`
+3. We perform a `print` statement to illustrate the moment just before the function `return`s, to signify that the function has run its code and is about to complete. 
+4. We return the closure, `sayHello`
+5. We assign the result of `sayHelloEventually` to a new `let`. This constant, `pendingMessage`, is of type `(Void)->String`. But what's interesting, is that when we call `print(pendingMessage())`, the closure that is stored in `pendingMessage` **still knows of the existance of the local constant `messagePrefix` and to the parameter we passed earlier!!** That's why it's able to still print this information out, long after the function has finished running!
+
+It'll take a little while to grasp this concept, but you'll see that extending the lifetime of a closure is very advantageous for network calls, which take much longer to finish than executing the code that starts them. The closure stays "alive" long enough for the network requests to complete, ensuring that we don't have a situation where we call a function expecting some network `Data` and the function finishes running before the network finishes returning the needed `Data`.
 
 ---
-###3. Escaping Closures - What and When
+###3. Asynchronous Request
 
+> Note: These examples are more easily done in an Xcode Project, rather than playgrounds. For the rest of this lesson, work in `ViewController.swift` of the project repo
 
+Let's write out a task that's going to take a few seconds to run:
+
+```swift
+class ViewController: UIViewController {
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view, typically from a nib.
+    
+  }
+  
+  override func viewDidAppear(_ animated: Bool) {
+    self.longRunningTask()
+    self.view.backgroundColor = .red
+  }
+
+  // run time will vary on your machine, but make sure this takes a few seconds before it completes
+  func longRunningTask() {
+    for i in 0...250000{
+      print("Count: \(i)")
+    }
+  }
+}
+
+```
+
+You should see all of the numbers from `0...250,000` print out in the console, followed by the `view.background` changing to `.red`. Its not uncommon that a network request (especially with bad cell service) takes this long to retrieve the contents from a webpage and then to display them on screen. Though, network requests don't generally hold up UI changes, meaning that making a request that takes a long time to finish shouldn't interfere with how we interact with the app. For example, text will load much quicker on a webpage than images. But you've definitely been in a situation where you can scroll through the page as the images start to get loaded. Imagine if you couldn't do *anything* until *every single thing* on that page was downloaded, ads and all! Not a great experience. 
+
+Network requests happen *asynchronously*, meaning that they can happen out of order and finish independent of any other request. Update your code in `longRunningTask` to this: 
+
+```swift
+  func longRunningTask() -> String {
+    
+    DispatchQueue.global().async {
+      for i in 0...250000{
+        print("Count: \(i)")
+      }
+    }
+
+  }
+```
+Notice the difference!? 
+
+Now instead of waiting for the loop to complete, the background of the view updates immediately. We've made our task *asynchronous*; it now gets started and finishes sometime later, but it doesn't hold everything else up. Asynchronous tasks get separated out into different *queues* in order to run code *concurrently*. Imagine this:
+
+You're at a grocery store, and you only need to buy granola. Just a single, lonesome bag of granola. So you walk in, grab the bag and stroll to the checkout. Bad news: there is only one register open and there are a huge line of customers ahead of you in the *queue* to checkout. For the most part, the customers ahead of you have only a handful of items each, so getting through everyone should be fairly quick, eventhough there are a lot of them. 
+
+You take a look all the way down to the start of the *queue* and you notice the hold up: a single customer with 3 carts-full of groceries. If only there were other *queue* open so that you didn't have to depend (*synchronizity*) on all of the customers (*task*) ahead of you! 
+
+###4. Escaping Closures
+
+Escaping closures are a special beast: they extend the lifetime of a closure and also (usually) get written with trailing closure syntax. 
 ---
 ###4. Exercises

@@ -48,3 +48,25 @@ printGreetMessage(name: "Louis", msg: newMailMessage)
 printGreetMessage(name: "Louis") { (str: String) -> String in
   return "Hey \(str)! You have new friend requests"
 }
+
+func sayHelloNow(name: String) -> String {
+  let messagePrefix = "Hey, its been awhile"
+  let helloMessage = messagePrefix + " \(name)"
+  
+  return helloMessage
+}
+print(sayHelloNow(name: "Louis"))
+
+func sayHelloEventually(name: String) -> ()->String {
+  let messagePrefix = "Hey, its been awhile"
+  
+  let sayHello = {
+    return messagePrefix + " \(name)"
+  }
+  
+  print("Returning Hello")
+  return sayHello
+}
+
+let pendingMessage = sayHelloEventually(name: "Louis")
+print(pendingMessage())
