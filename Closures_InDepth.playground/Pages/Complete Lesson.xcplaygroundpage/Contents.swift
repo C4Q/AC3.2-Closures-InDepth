@@ -1,8 +1,7 @@
-//: Playground - noun: a place where people can play
-
+import Foundation
 import UIKit
 
-// this function's type is 
+// this function's type is
 // (String) -> String
 func greet(name: String )-> String {
   return "Hello, \(name)!"
@@ -20,6 +19,9 @@ let greetClosure = { (name: String) -> String in
 greetClosure("Louis")
 
 
+
+
+
 func printGreetMessage(name: String, msg: (String) -> String) {
   let message = msg(name)
   print(message)
@@ -32,6 +34,8 @@ let newMailMessage = { (name: String) -> String in
 printGreetMessage(name: "Louis", msg: newMailMessage)
 
 
+
+
 // this returns a type (String)->String
 func logoutMessage() -> (String)->String {
   return { (name: String) -> String in
@@ -41,6 +45,10 @@ func logoutMessage() -> (String)->String {
 let logout: (String)->String = logoutMessage()
 logout("Louis") // prints "You have been logged out, Louis"
 
+
+
+
+
 printGreetMessage(name: "Louis", msg: newMailMessage)
 //
 // -- or --
@@ -48,6 +56,9 @@ printGreetMessage(name: "Louis", msg: newMailMessage)
 printGreetMessage(name: "Louis") { (str: String) -> String in
   return "Hey \(str)! You have new friend requests"
 }
+
+
+
 
 func sayHelloNow(name: String) -> String {
   let messagePrefix = "Hey, its been awhile"
