@@ -317,6 +317,63 @@ CLOSURES! But not just any type of closures, `@escaping` closures.
 
 ###4. Escaping Closures
 
-Escaping closures are a special beast: they extend the lifetime of a closure and also (usually) get written with trailing closure syntax. 
+Escaping closures are a special beast: they extend the lifetime of a closure to ensure we have enough time to get the result of a long running task. They are closures defined at least one closure parameter and are marked with the `@escaping` identifier in their  parameter declarations. 
+
+```swift 
+func nameOfFunction(callback: @escaping (param1: Any, param2: Any , ...)->(Void))
+```
+When called, we use trailing closure syntax to work with the expected return values.
+```swift
+self.nameOfFunction { (param1, param2, ...) in 
+	// code goes here
+}
+```
+
+> `escaping` closures are often referred to as "callbacks"
+
+So in our example, let's see how this would affect our code:
+
+```swift
+// 1.
+  func longAdditionTask(callback: @escaping (Int)->Void) {
+    print("Starting Addition")
+    var result = 0
+    
+    DispatchQueue.global().async {
+      result = Array(0...10000000).reduce(0, +)
+      
+      // 2.
+      callback(result)
+    }
+  }
+```
+
+1. We need to change the declaration of `longAdditionTask` to accept a single parameter of (Int)->Void. We also need to declare the closure as being `@escaping` because the contents and scope of the closure "escape" the lifetime of the function -- meaning it will continue to live and have other code access its stored values long after the function itself finishes execution. 
+2. To pass our needed `result: Int`, we give it to the closures `callback` as its one parameter.
+
+> *Remember, `callback` is of type `(Int)-Void` meaning it accepts a single `Int` parameter and returns nothing. So working with this closure is done exactly the same way as described earlier in "Closures as Variables" and "Closures as Parameters".*
+
+To call this new function, we'll use trailing syntax back in `viewDidAppear`:
+
+```swift
+	self.longAdditionTask { (result: Int) in
+      print("Done, ", result)
+    }
+```
+
+> Image
+
+Ok, run the project one last time and observe the difference! 
+
+
+####Excellent work! We've accomplished a lot:
+
+1. We no longer hold up the rest of our code because of our long task
+2. And we can access the proper value as soon as its ready
+
+If this still doesn't seem 💯 yet, dont worry. You're going to get used to them pretty quickly: closures are awesome and are used all over! 
+
+😎
+
 ---
 ###4. Exercises
