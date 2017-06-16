@@ -9,21 +9,24 @@
 
 ### Readings
 
-> TODO
+1. [Chapter 9: Closures - We ❤️ Swift](https://www.weheartswift.com/closures/)
+2. [Closures - Swift From Scratch](https://code.tutsplus.com/tutorials/swift-from-scratch-closures--cms-23138)
+3. [Escaping and Nonescaping Closures - Swift Unboxed](https://swiftunboxed.com/lang/closures-escaping-noescape-swift3/)
 
 #### Further Readings:
 
-> TODO
+1. [Introduction to Closures in Swift 3 - Jayven via Medium](https://medium.com/ios-os-x-development/introduction-to-closures-in-swift-3-1d46dfaf8a20)
+	- This is a good resource to see how to translate a function into a closure
+2. [Closures - Swift By Example](http://brettbukowski.github.io/SwiftExamples/examples/closures/)
+	- Quick reference to closures
 
 #### Vocabulary
 
-> TODO 
-
-- `@escaping` closure
-- Callback
-- Concurrent
-- Queue
-- Asynchronous
+- **Closure**: Closures are self-contained blocks of functionality that can be passes around and used in your code. - [Apple](https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/Closures.html)
+- **Callback**: A callback is any executable code that is passed as an argument to other code, which is expected to *call back* (execute) the argument at a given time. - [Wiki](https://en.wikipedia.org/wiki/Callback_(computer_programming))
+- **Concurrent**: When two tasks overlap in execution. [Quora](https://www.quora.com/What-is-concurrency-in-programming)
+- **Queue**: A block of code that can be executed synchronously or asynchronously, either on the main or on a background thread. - [AppCoda](https://www.appcoda.com/grand-central-dispatch/)
+- **Asynchronous**: Essentially, code that is executed on a background thread so it doesn't block the main thread. - [SO](https://stackoverflow.com/questions/9200558/grand-central-dispatch-async-vs-sync). For a look at sync v. async and serial v. concurrent see [this answer](https://stackoverflow.com/questions/19179358/concurrent-vs-serial-queues-in-gcd?noredirect=1&lq=1).
 
 ---
 
@@ -244,7 +247,7 @@ The result is that we can put a long running task on its own queue, and get back
 Let's make another change to `longRunningTask` by having it return something:
 
 ```swift
-  func longRunningTask() {
+  func longRunningTask() -> String {
     
     DispatchQueue.global().async {
       for i in 0...250000{
@@ -283,7 +286,7 @@ Now change it so that we use the result of our addition task:
 
 ```swift
   override func viewDidAppear(_ animated: Bool) {
-//    print(self.longRunningTask())
+  // print(self.longRunningTask())
     print("Done, ", self.longAdditionTask())
     self.view.backgroundColor = .red
   }
@@ -300,8 +303,8 @@ Now change it so that we use the result of our addition task:
 We still haven't solved the waiting issue (having to wait for the return value) though, so lets wrap things up in another `DispatchQueue` call: 
 
 ```swift
-func longAdditionTask() -> Int {
-	print("Starting Addition")
+  func longAdditionTask() -> Int {
+    print("Starting Addition")
     var result = 0
     
     DispatchQueue.global().async {
@@ -322,11 +325,11 @@ Wait, what? The view changed to red almost immediately but it printed out 0 as t
 Here's why:
 
 1. We make a call to `longAdditionTask`
-2. Code executions line by line in the function, print out to console and instantiating `result = 0`
+2. Code executions line by line in the function, printing `"Starting Addition"` in console and instantiating `result = 0`
 3. `DispatchQueue` pushes off the task that's taking the most time off to another queue
-4. Code in `longAdditionTask` continues to execute line by line, since it's slowest code has been pushed elsewhere
+4. Code in `longAdditionTask` continues to execute line by line
 5. The *current* value of `result`, which is 0, gets returned and the function finishes.
-6. Later on, the long running task on the `DispatchQueue` finishes and assigns its value to result... which no longer is of any use since `result` only lives in the lifetime  of the `longAdditionTask` function and that function has finished a long time ago. 
+6. Later on, the long running task on the `DispatchQueue` finishes and assigns its value to `result`... which no longer is of any use since `result` only lives in the lifetime  of the `longAdditionTask` function and that function has finished a long time ago. 
 
 Then the question remains: Where performing lengthy tasks, how can we wait in order to get the correct return values? 
 
@@ -356,8 +359,8 @@ So in our example, let's see how this would affect our code:
   }
 ```
 
-1. We need to change the declaration of `longAdditionTask` to accept a single parameter of (Int)->Void. We also need to declare the closure as being `@escaping` because the contents and scope of the closure *"escape"* the lifetime of the function -- meaning it will continue to live and have other code access its stored values long after the function itself finishes execution. 
-2. To pass our needed `result: Int`, we give it to the `callback` parameter.
+1. We need to change the declaration of `longAdditionTask` to accept a single parameter of `(Int)->Void`. We also need to declare the closure as being `@escaping` because the contents and scope of the closure *"escape"* the lifetime of the function -- meaning it will continue to live and have other code access its stored values long after the function itself finishes execution. 
+2. To pass our needed `result: Int`, we give it to the `callback` closure parameter.
 
 > *Remember, `callback` is of type `(Int)->Void` meaning it accepts a single `Int` parameter and returns nothing. So working with this closure is done exactly the same way as described earlier in "Closures as Variables" and "Closures as Parameters".*
 
@@ -385,4 +388,4 @@ If this still doesn't seem 💯 yet, dont worry. You're going to get used to the
 ---
 ### 4. Exercises
 
-> TODO
+> Please complete exercises 9.1 to 9.8 found towards the bottom on [We ❤️  Swift](https://www.weheartswift.com/closures/). Note that the solutions to these exercises are on the same page as well. Do your best to solve them without looking at the hint/solution. 
