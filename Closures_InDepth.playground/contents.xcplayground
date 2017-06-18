@@ -3,6 +3,5 @@
     <pages>
         <page name='Lesson Start'/>
         <page name='Complete Lesson'/>
-        <page name='Exercises'/>
     </pages>
 </playground>

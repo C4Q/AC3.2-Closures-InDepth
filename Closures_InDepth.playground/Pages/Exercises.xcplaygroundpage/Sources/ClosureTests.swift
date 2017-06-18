@@ -19,6 +19,7 @@ public class ClosureTests: XCTestCase {
     func incrementValue() {
       testValue = testValue + 10
     }
+    
     let expectedResult = 30
     exerciser.applyKTimes(K: 3, closure: incrementValue)
     
