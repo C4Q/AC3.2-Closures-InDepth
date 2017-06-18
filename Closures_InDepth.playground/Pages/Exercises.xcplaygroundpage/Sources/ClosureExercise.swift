@@ -67,4 +67,40 @@ public class ClosureExercise {
     })
   }
   
+  /*
+   6. Write a function called `chainedOddSum` that takes a param of `numbers` of type [Int] and returns Int. The function
+   should find the sum of the squares of all the odd numbers from `numbers`. Use map, filter and reduce to solve this problem.
+ */
+  public func chainedOddSum(numbers: [Int]) -> Int {
+    return numbers
+      .filter{ $0 % 2 == 1 }
+      .map{ $0 * $0 }
+      .reduce(0, +)
+  }
+  
+  /*
+   7. Write a function called `forEachValue` that takes in two parameters: `numbers: [Int]` and a `closure` of type `(Int)->(Int)`.
+   The closure should be called for each number in `numbers`. Return the array after it has been iterated over.
+   */
+  public func forEachValue(numbers: [Int], closure: (Int)->(Int)) -> [Int] {
+    return numbers.map{ closure($0) }
+  }
+  
+  /*
+   8. Implement a function named `combineArrays` that takes 2 arrays (`a: [Int], b: [Int]`) and a closure that combines
+   2 Ints into a single Int. The function combines the two arrays into a single array using the provided closure. Return
+   the combined [Int] array.
+   
+   Assume that the 2 arrays have equal length.
+   */
+  public func combineArrays(a: [Int], b: [Int], closure: (Int, Int)->Int) -> [Int] {
+    var returnArray: [Int] = []
+    for i in 0..<a.count {
+      returnArray.append(closure(a[i], b[i]))
+    }
+    
+    return returnArray
+  }
+  
+  
 }
