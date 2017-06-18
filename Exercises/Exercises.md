@@ -1,6 +1,6 @@
 ### Closure Exercises
 
-> Note that these exercises are found at the bottom of [this link](https://www.weheartswift.com/closures/). They are being re-added here for tracking purposes and in case the source link changes. 
+> Note that these exercises are based on those found at the bottom of [this link](https://www.weheartswift.com/closures/). They are being added here for tracking purposes and in case the source link changes. 
 
 ---
 

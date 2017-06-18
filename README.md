@@ -388,4 +388,10 @@ If this still doesn't seem 💯 yet, dont worry. You're going to get used to the
 ---
 ### 4. Exercises
 
-> Please complete exercises 9.1 to 9.8 found towards the bottom on [We ❤️  Swift](https://www.weheartswift.com/closures/). Note that the solutions to these exercises are on the same page as well. Do your best to solve them without looking at the hint/solution. 
+> Instructions: Please complete the exercises found in the `Exercises` playground page. In the `Sources` folder of the page, you will be writing in your answers in `ClosureExercise.swift`, inside the scope of the `ClosureExercise` class. You can call your code in `ClosureExercise` from the main playground page in `Exercises`. Be sure to make your functions `public` to be able to call them from outside of the `Sources` folder.
+
+> When you're ready, you can run the test suite by uncommenting the line: 
+
+`TestRunner().runTests(testClass: ClosureTests.self)`
+
+> Note: The file `ClosureTests.swift` should not be changed, but can be used as a reference in order to write your code. 

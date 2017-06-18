@@ -1,5 +1,3 @@
-//: [Previous](@previous)
-
 import Foundation
 
 let exercises = ClosureExercise()
@@ -7,5 +5,11 @@ let exercises = ClosureExercise()
 
 
 
-// Uncomment below to run tests
-TestRunner().runTests(testClass: ClosureTests.self)
+// ---------------------------------------------------
+//
+//                TESTS
+//
+//      Uncomment below to run tests
+//
+
+// TestRunner().runTests(testClass: ClosureTests.self)
