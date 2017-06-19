@@ -27,6 +27,7 @@
 - **Concurrent**: When two tasks overlap in execution. [Quora](https://www.quora.com/What-is-concurrency-in-programming)
 - **Queue**: A block of code that can be executed synchronously or asynchronously, either on the main or on a background thread. - [AppCoda](https://www.appcoda.com/grand-central-dispatch/)
 - **Asynchronous**: Essentially, code that is executed on a background thread so it doesn't block the main thread. - [SO](https://stackoverflow.com/questions/9200558/grand-central-dispatch-async-vs-sync). For a look at sync v. async and serial v. concurrent see [this answer](https://stackoverflow.com/questions/19179358/concurrent-vs-serial-queues-in-gcd?noredirect=1&lq=1).
+- **First-Class Citizen**: a first-class citizen (also type, object, entity, or value) in a given programming language is an entity which supports all the operations generally available to other entities. These operations typically include being passed as an argument, returned from a function, modified, and assigned to a variable. [Wiki](https://en.wikipedia.org/wiki/First-class_citizen)
 
 ---
 
