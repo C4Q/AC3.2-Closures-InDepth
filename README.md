@@ -22,7 +22,7 @@
 
 #### Vocabulary
 
-- **Closure**: Closures are self-contained blocks of functionality that can be passes around and used in your code. - [Apple](https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/Closures.html)
+- **Closure**: Closures are self-contained blocks of functionality that can be passed around and used in your code. - [Apple](https://developer.apple.com/library/content/documentation/Swift/Conceptual/Swift_Programming_Language/Closures.html)
 - **Callback**: A callback is any executable code that is passed as an argument to other code, which is expected to *call back* (execute) the argument at a given time. - [Wiki](https://en.wikipedia.org/wiki/Callback_(computer_programming))
 - **Concurrent**: When two tasks overlap in execution. [Quora](https://www.quora.com/What-is-concurrency-in-programming)
 - **Queue**: A block of code that can be executed synchronously or asynchronously, either on the main or on a background thread. - [AppCoda](https://www.appcoda.com/grand-central-dispatch/)
